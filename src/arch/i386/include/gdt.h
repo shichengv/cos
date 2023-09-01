@@ -1,6 +1,7 @@
+
 #ifndef _GDT_H
 #define _GDT_H
-#include "../../../libk/include/stdint.h"
+#include "types.h"
 
 #define GDT_SIZE 256
 
@@ -116,5 +117,6 @@ typedef struct tss_t{
 
 } __attribute__((packed)) tss_t;
 
+void gdt_init();
 
 #endif

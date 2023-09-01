@@ -1,5 +1,4 @@
 #include "../include/stdint.h"
-#include "../../include/kernel/types.h"
 #include "../include/string.h"
 
 void* memcpy(void* restrict dstptr, const void* restrict srcptr, size_t size) {

@@ -2,7 +2,11 @@
 #define _STRING_H 1
 
 #include "sys/cdefs.h"
-#include "../../include/kernel/types.h"
+
+#ifndef _SIZE_T
+#define _SIZE_T 1
+typedef unsigned long size_t;
+#endif
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,6 +1,5 @@
 #include "../include/stdint.h"
 #include "../include/string.h"
-#include "../../include/kernel/types.h"
 
 void* memmove(void* dstptr, const void* srcptr, size_t size) {
 	unsigned char* dst = (unsigned char*) dstptr;

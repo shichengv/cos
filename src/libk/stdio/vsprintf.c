@@ -1,14 +1,12 @@
-/* vsprintf.c -- Lars Wirzenius & Linus Torvalds. */
-/*
- * Wirzenius wrote this portably, Torvalds fucked it up :-)
- */
-
 #include "../include/stdio.h"
 #include "../include/stdarg.h"
 #include "../include/stdint.h"
 #include "../include/string.h"
-#include "../../include/kernel/types.h"
 
+#ifndef _SIZE_T
+#define _SIZE_T 1
+typedef unsigned long size_t;
+#endif
 
 #define ZEROPAD 0x01 // 填充零
 #define SIGN 0x02    // unsigned/signed long
@@ -22,9 +20,9 @@
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
 
 // 将字符数字串转换成整数，并将指针前移
-static int skip_atoi(const char **s)
+static long skip_atoi(const char **s)
 {
-    int i = 0;
+    long  i = 0;
     while (is_digit(**s))
         i = i * 10 + *((*s)++) - '0';
     return i;
@@ -37,12 +35,12 @@ static int skip_atoi(const char **s)
 // size - 字符串长度
 // precision - 数字长度(精度)
 // flags - 选项
-static char *number(char *str, uint32_t *num, int base, int size, int precision, int flags)
+static char *number(char *str, uint64_t *num, long  base, long  size, long  precision, long  flags)
 {
     char pad, sign, tmp[36];
     const char *digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    int i;
-    int index;
+    long  i;
+    long  index;
     char *ptr = str;
 
     // 如果 flags 指出用小写字母，则定义小写字母集
@@ -95,8 +93,8 @@ static char *number(char *str, uint32_t *num, int base, int size, int precision,
     // 如果数值 num 为 0，则临时字符串='0'；否则根据给定的基数将数值 num 转换成字符形式
     if (flags & DOUBLE)
     {
-        uint32_t ival = (uint32_t)(*(double *)num);
-        uint32_t fval = (uint32_t)(((*(double *)num) - ival) * 1000000);
+        uint64_t ival = (uint64_t)(*(double *)num);
+        uint64_t fval = (uint64_t)(((*(double *)num) - ival) * 1000000);
         do
         {
             index = (fval) % base;
@@ -181,23 +179,23 @@ static char *number(char *str, uint32_t *num, int base, int size, int precision,
     return str;
 }
 
-int vsprintf(char *buf, const char *fmt, va_list args)
+long  vsprintf(char *buf, const char *fmt, va_list args)
 {
-    int len;
-    int i;
+    long len;
+    long i;
 
     // 用于存放转换过程中的字符串
     char *str;
     char *s;
-    int *ip;
+    long *ip;
 
     // number() 函数使用的标志
-    int flags;
+    long flags;
 
-    int field_width; // 输出字段宽度
-    int precision;   // min 整数数字个数；max 字符串中字符个数
-    int qualifier;   // 'h', 'l' 或 'L' 用于整数字段
-    uint32_t num;
+    long field_width; // 输出字段宽度
+    long precision;   // min 整数数字个数；max 字符串中字符个数
+    long qualifier;   // 'h', 'l' 或 'L' 用于整数字段
+    uint64_t num;
     uint8_t *ptr;
 
     // 首先将字符指针指向 buf
@@ -382,7 +380,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
         // 表示要把到目前为止转换输出的字符数保存到对应参数指针指定的位置中
         case 'n':
             // 首先利用 va_arg() 取得该参数指针
-            ip = va_arg(args, int *);
+            ip = va_arg(args, long  *);
             // 然后将已经转换好的字符数存入该指针所指的位置
             *ip = (str - buf);
             break;
@@ -390,7 +388,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
             flags |= SIGN;
             flags |= DOUBLE;
             double dnum = va_arg(args, double);
-            str = number(str, (uint32_t *)&dnum, 10, field_width, precision, flags);
+            str = number(str, (uint64_t *)&dnum, 10, field_width, precision, flags);
             break;
         case 'b': // binary
             num = va_arg(args, unsigned long);
@@ -401,7 +399,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
             ptr = va_arg(args, char *);
             for (size_t t = 0; t < 6; t++, ptr++)
             {
-                int num = *ptr;
+                long  num = *ptr;
                 str = number(str, &num, 16, 2, precision, flags);
                 *str = ':';
                 str++;
@@ -413,7 +411,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
             ptr = va_arg(args, uint8_t *);
             for (size_t t = 0; t < 4; t++, ptr++)
             {
-                int num = *ptr;
+                long num = *ptr;
                 str = number(str, &num, 10, field_width, precision, flags);
                 *str = '.';
                 str++;

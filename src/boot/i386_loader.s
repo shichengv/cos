@@ -1,6 +1,5 @@
 [org 0x500]
 
-dw 0x55aa; 加载器标识，判断错误
 available_ram equ 0x9000; 有效内存存放的位置
                         ; 存放了可用的RAM大小
 ; hello
@@ -16,13 +15,7 @@ call print
 jmp perpare_protected_mode
 
 perpare_protected_mode: 
-    cli ; 关闭中断
 
-    ; turn on A20
-    in al, 0x92
-    or al, 0b10
-    out 0x92, al
-    
     ; 加载GDT IDT
     lgdt [ gdt_48 ]
     lidt [ idt_48 ]
@@ -160,21 +153,19 @@ protect_mode:
     mov ss, ax
 
     ; 修改栈指针 为了使用read_disk
-    mov esp, 0xFFFF;
+    mov esp, 0x10000;
 
     ; 将内核读取到 0x10000的位置
-    mov edi, 0x10000
+    mov edi, 0x100000
     mov ecx, 6
     mov bl, 200
     call read_disk
 
-    ; 魔数
-    mov eax, 0x10100101
-    mov ebx, acpi_s_count
+    mov eax, acpi_s_count
 
     ; 根据逻辑地址，找到GDT表中的第二个项，内核级代码段
     ; 由于设置为00级，所以跳到的位置被视为内核
-    jmp dword segment_selector_code:0x10000
+    jmp dword segment_selector_code:0x100000
     
     ud2; error
     

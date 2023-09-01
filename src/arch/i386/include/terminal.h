@@ -1,7 +1,7 @@
 #ifndef _TERMINAL_H
-#define _TERMINAL_H
+#define _TERMINAL_H 1
 
-#include "../../kernel/types.h"
+#include "types.h"
 #include "../../../libk/include/stdint.h"
 
 #define CRT_INDEX_REG 0x3D4 // CRT control regiser
@@ -57,8 +57,6 @@ enum vga_color {
 };
 
 void _term_clear_terminal();
-int32_t _term_terminal_putstring(void * dev, char *str, uint32_t length);
-void _term_init(int col, int row);
-
+int64_t _term_terminal_putstring(void * dev, char *str, uint64_t length);
 
 #endif

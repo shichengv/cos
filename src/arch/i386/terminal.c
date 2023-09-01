@@ -1,19 +1,16 @@
-#include "../../include/kernel/types.h"
 #include "./include/terminal.h"
 #include "./include/io.h"
-#include "../../libk/include/stdint.h"
 #include "../../libk/include/string.h"
 
+#define WIDTH 80
+#define HEIGHT 25
 #define ROW_SIZE (WIDTH * 2)
 #define SCREEN_SIZE (ROW_SIZE * HEIGHT) 
 
-static int16_t WIDTH;
-static int16_t HEIGHT;
-
-static uint32_t display_memory = MEM_BASE_ADDR;
-static uint32_t cursor = MEM_BASE_ADDR;
-static uint32_t x = 0;
-static uint32_t y = 0;
+static uint64_t display_memory = MEM_BASE_ADDR;
+static uint64_t cursor = MEM_BASE_ADDR;
+static uint64_t x = 0;
+static uint64_t y = 0;
 static uint8_t color = (VGA_COLOR_LIGHT_GREY | (VGA_COLOR_BLACK << 4));
 
 
@@ -68,10 +65,10 @@ void _term_clear_terminal(){
     set_display_location();
 
     uint16_t * ptr = (uint16_t*)MEM_BASE_ADDR;
-    while ((uint32_t)ptr < MEM_END_ADDR)
+    while ((uint64_t)ptr < MEM_END_ADDR)
         *ptr++=(uint16_t)ERASE;
 }
-static  void erase_screen(uint16_t erase, uint16_t * start, uint32_t count){
+static  void erase_screen(uint16_t erase, uint16_t * start, uint64_t count){
     int nr = 0;
     while (nr++ < count)
     {
@@ -128,7 +125,65 @@ static void ascii_lf(){
     
 }
 
-int32_t _term_terminal_putstring(void * dev, char *str, uint32_t length){
+static void ascii_ht(){
+    uint16_t * pc = (uint16_t*)cursor;
+    if (x == 79)
+        return;
+    
+    uint16_t left = x % 4;
+    if (!left){
+        for (size_t i = 0; i < 4; i++)
+            *pc++ = (uint16_t)ERASE;
+        x += 4;
+    }
+    left = 4 - left;
+    x += left;
+    for (size_t i = 0; i < left; i++)
+        *pc++ = (uint16_t)ERASE;
+    cursor = (uint64_t)pc;
+    
+}
+
+void _term_terminal_putchar(char uc){
+    // set_interrupt_access(0);
+    uint16_t * ptr = (uint16_t*)cursor;
+    switch (uc)
+    {
+        case NUL:
+            break;
+        case BS:
+            ascii_bs();
+            break;
+        case HT:
+            ascii_ht();
+            break;
+        case LF:
+            ascii_cr();
+            ascii_lf();
+            break;
+        case CR:
+            ascii_cr();
+            break;
+        
+        default:
+            if (x >= WIDTH)
+            {
+                x -= WIDTH;
+                cursor -= ROW_SIZE;
+                ascii_lf();
+            }
+            
+            *(uint16_t*)cursor = vga_entry(uc, color);
+            cursor += 2;
+            x++;
+            break;
+    }
+    // 由于最后一次输出字符 pc 值加 1,所以要减去
+    set_cursor_location();
+    // set_interrupt_access(1);
+}
+
+int64_t _term_terminal_putstring(void * dev, char *str, uint64_t length){
     // int _bit_if = interrupt_disable();
     int32_t counter = 0;
     while (counter++ < length)
@@ -140,6 +195,9 @@ int32_t _term_terminal_putstring(void * dev, char *str, uint32_t length){
             return counter;
         case BS:
             ascii_bs();
+            break;
+        case HT:
+            ascii_ht();
             break;
         case LF:
             ascii_cr();
@@ -171,9 +229,7 @@ int32_t _term_terminal_putstring(void * dev, char *str, uint32_t length){
     return counter;
 }
 
-void _term_init(int col, int row){
-    WIDTH = col;
-    HEIGHT = row;
+void _term_init(){
     _term_clear_terminal();
 
     // device_install(

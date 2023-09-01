@@ -2,7 +2,7 @@
 plugin_ctrl: unmapped=true, biosdev=true, speaker=true, extfpuirq=true, parallel=true, serial=true, iodebug=true, pcidev=false, usb_uhci=false
 config_interface: textconfig
 display_library: x, options="gui_debug"
-memory: host=32, guest=32
+memory: host=1024, guest=1024
 romimage: file="/usr/share/bochs/BIOS-bochs-latest", address=0x00000000, options=none
 vgaromimage: file="/usr/share/bochs/VGABIOS-lgpl-latest"
 boot: disk
@@ -34,7 +34,7 @@ cpuid: movbe=false, adx=false, aes=false, sha=false, xsave=false, xsaveopt=false
 cpuid: avx_fma=false, bmi=0, xop=false, fma4=false, tbm=false, x86_64=true, 1g_pages=false
 cpuid: pcid=false, fsgsbase=false, smep=false, smap=false, mwait=true
 print_timestamps: enabled=0
-debugger_log: -
+debugger_log: ../conf/bx_enh_dbg.ini
 magic_break: enabled=1
 port_e9_hack: enabled=0
 private_colormap: enabled=0

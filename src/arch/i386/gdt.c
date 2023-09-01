@@ -1,13 +1,12 @@
 #include "./include/gdt.h"
-
-
+#include "../../libk/include/string.h"
 struct segment_descriptor gdt[GDT_SIZE];
 struct pseudo_des_gdtr gdt_ptr;
 
 tss_t tss;
 
 
-void gdt_init(){
+void _gdtm_gdt_init(){
 
     memset(&gdt , 0, sizeof(gdt));
 

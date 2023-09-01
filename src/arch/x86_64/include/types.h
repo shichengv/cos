@@ -1,13 +1,15 @@
 #ifndef _TYPES_H
-#define _TYPES_H
+#define _TYPES_H 1
 
-#include "../../libk/include/stdint.h"
+#include "../../../libk/include/stdint.h"
 
 #define CONCAT(x, y) x##y
 #define RESERVED_TOKEN(x, y) CONCAT(x, y)
 #define RESERVED RESERVED_TOKEN(reserved, __LINE__)
 
-#define bool _Bool
+#define NULL (char*)0
+
+#define bool char
 #define true 1
 #define false 0
 
@@ -16,7 +18,6 @@
 
 typedef unsigned long size_t;
 typedef long ssize_t;
-typedef long ssize_t;
 
 
 typedef uint32_t time_t;
@@ -24,6 +25,8 @@ typedef uint32_t time_t;
 typedef int32_t dev_t;
 
 typedef uint16_t mode_t;
+
+typedef uint32_t reg_t;
 
 typedef int pid_t;
 

@@ -1,12 +1,20 @@
 SRC:=.
 DEST:=../build
-ENTRYPOINT:= 0x10000
+ENTRYPOINT:= 0x100000
 
-# TARGET:= main
+# ARCH!=../conf/uname.sh
+
+# TEST i386
+ARCH:=i386
+
+ARCHDIR:=arch/$(ARCH)
 
 CC:=gcc
 
+CFLAGS:= -static
+# x86_64 需要注释此行
 CFLAGS:= -m32
+
 CFLAGS+= -fno-builtin
 CFLAGS+= -fno-common
 CFLAGS+= -nostdinc
@@ -14,6 +22,7 @@ CFLAGS+= -fno-pic
 CFLAGS+= -fno-pie
 CFLAGS+= -nostdlib
 CFLAGS+= -fno-stack-protector
+CFLAGS+= -Og
 CFLAGS+= -g
 CFLAGS:=$(strip ${CFLAGS})
 
@@ -22,9 +31,9 @@ DEBUG:= -g
 include boot/make.conf
 include libk/make.conf
 include kernel/make.conf
-include arch/i386/make.conf
+include $(ARCHDIR)/make.conf
 
-# ======== 保留，不用来编译，必须使用构建的i686工具链进行编译 =======
+# ======== 保留，不用来编译，必须使用构建的工具链进行编译 =======
 # 
 # CRT_S:=$(foreach dir, $(ARCHDIR), $(wildcard $(dir)/*.S))
 # CRT_OBJS:=$(patsubst %.c,$(DEST)/%.o,$(CRT_S))
@@ -65,7 +74,8 @@ KERNEL:=$(DEST)/kernel.bin
 $(KERNEL): $(OBJS) 
 	@echo linking...
 	$(shell mkdir -p $(dir $@))
-	ld -m elf_i386 -static $^ -o $@ -Ttext $(ENTRYPOINT)
+	$(CC) -T $(ARCHDIR)/linker.ld -o $@ $(CFLAGS) $(OBJS)
+# ld -m elf_x86_64 -static $^ -o $@ -Ttext $(ENTRYPOINT)
 	@echo complete!
 
 
@@ -79,10 +89,26 @@ clean:
 .PHONY: target
 # target: $(KERNEL)
 target: 
+	@echo "入口程序可重定位目标文件"
 	@echo $(START)
+	@echo ""
+	@echo "目标架构中的所有汇编源文件"
 	@echo $(ARCH_SRCS_NASM)
+	@echo ""
+	@echo "目标架构中的所有C源文件"
 	@echo $(ARCH_SRCS_C)
+	@echo ""
+	@echo "目标架构中的所有由汇编编译的可重定位目标文件"
 	@echo $(ARCH_OBJS_NASM)
+	@echo ""
+	@echo "目标架构中的所有由C代码编译出的可重定位目标文件"
 	@echo $(ARCH_OBJS_C)
+	@echo ""
+	@echo "libk库的所有可重定位目标文件"
 	@echo $(LIBK_OBJS)
+	@echo ""
+	@echo "被链接的所有文件"
 	@echo $(OBJS)
+
+.PHONY: kernel
+kernel: $(KERNEL)

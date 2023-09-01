@@ -3,6 +3,13 @@
 mov ax, 3
 int 0x10
 
+cli ; 关闭中断
+
+; turn on A20
+in al, 0x92
+or al, 0b10
+out 0x92, al
+
 ; 初始化每个寄存器
 mov ax, 0
 mov ds, ax
@@ -21,11 +28,7 @@ mov bl, 4; 扇区数量
 
 call read_disk
 
-; 如果不是加载器标识就出错
-cmp word [0x500], 0x55aa
-jnz error
-; 跳转到 0x502 内存区域，loader内存
-jmp 0:0x502
+jmp 0:0x500
 
 ; 阻塞
 jmp $
