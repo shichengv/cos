@@ -107,7 +107,7 @@ static void idt_init(){
     
 }
 
-void _intr_m_intr_init(){
+void _intr_m_init(){
 
     _intr_m_interrupt_enable(false);
 
@@ -117,11 +117,11 @@ void _intr_m_intr_init(){
     
     /*  如果支持APIC就启用APIC并禁用PIC */
     if (_mac_if._support_f_apic){
-        printk("Initialize APIC");
+        printk("Initialize APIC...\n");
         _pic_m_disable_pic();
         _apic_m_apic_init();
     } else {
-        printk("Initialize PIC");
+        printk("Initialize PIC...\n");
         _pic_m_PIC_remap(MASTER_OFFSET, SLAVE_OFFSET);
     }
 

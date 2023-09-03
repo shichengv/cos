@@ -16,7 +16,6 @@ interrupt_handler_%1:
     push 0x10100101
 %endif
 ; 如何不为空就执行下面
-    xchg bx, bx
     push %1;
     jmp interrupt_entry
 %endmacro
@@ -32,7 +31,6 @@ interrupt_entry:
     push eax
 
     call [_intr_handler_table + eax * 4]
-    xchg bx, bx
 
     ; 恢复esp
     add esp, 4

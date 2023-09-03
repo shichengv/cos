@@ -7,9 +7,9 @@ extern _term_init
 extern _mac_if
 extern _show_machine_info
 
-extern _intr_m_intr_init
+extern _intr_m_init
 
-extern _mm_paging_init
+extern _mem_m_init
 
 extern kernel_main
 ; equ伪指令定义符号常量
@@ -35,9 +35,9 @@ _start:
     call _show_machine_info
     add esp, 4
 
-    call _intr_m_intr_init
-    ; call _mm_paging_init
-    ; add esp, 4
+    call _intr_m_init
+    call _mem_m_init
+    add esp, 4
 
     call kernel_main
 

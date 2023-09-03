@@ -16,8 +16,13 @@
 #define _packed __attribute__((packed))
 #define _inline __attribute__((always_inline)) inline
 
+#ifndef _SIZE_T
+#define _SIZE_T 1
 typedef unsigned long size_t;
 typedef long ssize_t;
+#endif
+
+typedef unsigned long ptr_t;
 
 
 typedef uint32_t time_t;
