@@ -1,6 +1,11 @@
 #ifndef _STDINT_H
-#define _STDINT_H
+#define _STDINT_H 1
 
+#define NULL (void *)0
+
+#define bool char
+#define true 1
+#define false 0
 
 typedef char int8_t;
 typedef short int16_t;

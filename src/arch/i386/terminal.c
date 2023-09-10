@@ -135,11 +135,13 @@ static void ascii_ht(){
         for (size_t i = 0; i < 4; i++)
             *pc++ = (uint16_t)ERASE;
         x += 4;
+        goto cursor_update;
     }
     left = 4 - left;
     x += left;
     for (size_t i = 0; i < left; i++)
         *pc++ = (uint16_t)ERASE;
+cursor_update:
     cursor = (uint64_t)pc;
     
 }

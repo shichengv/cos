@@ -3,7 +3,7 @@
 #include "../../libk/include/stdint.h"
 #include "../../libk/include/stdio.h"
 
-#define YES(yes) (yes ? "yes" : "no")
+#define YES(yes) (yes ? "Yes" : "No")
 
 struct machine_info _mac_if;
 
@@ -58,10 +58,11 @@ void _show_machine_info(struct machine_info * info){
     info->hd_num = *(uint8_t*)0x475;
     _mi_get_cpu_vendor_id(info->cpu_vendor_id);
     _mi_detect_apic();
-    printk("Avaliable Ram Size: %dKB\n\r", (info->available_ram >> 10));
-    printk("Hard Disk Count: %d\n\r", info->hd_num);
-    printk("Display Mode: %d\n\r", info->display_mode);
-    printk("Display Column: %d\n\r", info->column);
-    printk("CPU Vendor ID: %s\n\r", info->cpu_vendor_id);
+    printk("Machine Info:\n");
+    printk("\tAvaliable Ram Size: %d KiB\n\r", (info->available_ram >> 10));
+    printk("\tHard Disk Count: %d\n\r", info->hd_num);
+    printk("\tDisplay Mode: %d\n\r", info->display_mode);
+    printk("\tDisplay Column: %d\n\r", info->column);
+    printk("\tCPU Vendor ID: %s\n\r", info->cpu_vendor_id);
     printk("\tSupport for APIC: %s\n\r", YES(info->_support_f_apic));
 }

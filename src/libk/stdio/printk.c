@@ -2,7 +2,6 @@
 #include "../include/stdarg.h"
 #include "../include/stdint.h"
 
-#define NULL ((char*)0)
 
 extern int64_t _term_terminal_putstring(void * dev, char *str, uint32_t length);
 int printk(const char *fmt, ...)

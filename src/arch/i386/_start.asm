@@ -24,6 +24,7 @@ section .text
 
 _start:
     ; 修改栈指针
+    mov esp, 0xF00000
     push eax
 
     call _gdtm_gdt_init

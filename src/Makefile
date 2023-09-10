@@ -4,8 +4,9 @@ ENTRYPOINT:= 0x100000
 
 # ARCH!=../conf/uname.sh
 
-# TEST i386
 ARCH:=i386
+
+TARGET:=$(ARCH)-elf
 
 ARCHDIR:=arch/$(ARCH)
 
@@ -25,6 +26,11 @@ CFLAGS+= -fno-stack-protector
 CFLAGS+= -Og
 CFLAGS+= -g
 CFLAGS:=$(strip ${CFLAGS})
+
+# 交叉编译器
+# CC:=$(HOME)/opt/cross/bin/$(TARGET)-gcc
+# CFLAGS:= -g
+# CFLAGS+= -ffreestanding -Wall -Wextra -nostdlib
 
 DEBUG:= -g
 
